@@ -19,18 +19,29 @@ ExternalProject_Add(freeglut
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${TPP_FREE_GLUT} -DFREEGLUT_BUILD_STATIC_LIBS=ON
 )
 
+include_directories(3pp/lodepng)
+
 set (SOURCES
   src/main.cc
+  3pp/lodepng/lodepng.cc
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${TPP_FREE_GLUT}/include)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${TPP_FREE_GLUT}/include )
 target_link_directories(${PROJECT_NAME} PUBLIC ${TPP_FREE_GLUT}/lib)
 target_link_libraries(${PROJECT_NAME} PUBLIC freeglut_staticd)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
+
 
 # Copy the FreeGLUT DLLs to the executable's directory
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+      ${TPP_FREE_GLUT}/bin
+      $<TARGET_FILE_DIR:${PROJECT_NAME}>
+)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${TPP_FREE_GLUT}/bin
+        ${CMAKE_SOURCE_DIR}/res
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
