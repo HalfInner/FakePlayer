@@ -7,6 +7,7 @@
 #include <future>
 #include <fstream>
 #include <filesystem>
+#include <type_traits>
 
 
 namespace fs = std::filesystem;
@@ -25,11 +26,19 @@ struct Image {
     uint32_t height{};
 };
 
+namespace Format {
+    struct kPng {};
+    struct kJpeg {};
+    struct kMjpeg {};
+} // namespace Format
+
+
+
 
 class Player {
 public:
     Player() {
-        int tmp{}0;
+        int tmp{};
         glutInit(&tmp, nullptr);
         glEnable(GLUT_DEBUG);
         glutInitDisplayMode(GLUT_SINGLE);
@@ -42,19 +51,25 @@ public:
     }
 
     ~Player() {
-        if (glut_task_.valid()) {
-            std::cout << "Waiting for glut to be closed...\n";
-            glut_task_.get();
+        if (task_.valid()) {
+            std::cout << "Waiting for task to be closed...\n";
+            task_.get();
         }
     }
 
-    void Open(std::vector<uint8_t> data) {
+    template<typename F>
+    void Open(const std::vector<uint8_t>& data, F f) {
+        std::cerr << "Not implemented\n";
+    }
+
+    template<>
+    void Open<>(const std::vector<uint8_t>& data, Format::kPng) {
         unsigned error = lodepng::decode(img_.raw_data, img_.width, img_.height, data, LodePNGColorType::LCT_RGBA, 8);
         if (error) {
             std::cerr << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
             throw std::runtime_error("Unable to decode data");
         }
-        
+
         glGenTextures(1, &img_.texture_id);
         glBindTexture(GL_TEXTURE_2D, img_.texture_id);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -63,13 +78,17 @@ public:
             img_.raw_data.data());
     }
 
+    template<>
+    void Open<>(const std::vector<uint8_t>& data, Format::kMjpeg) {
+
+    }
+
     void EnableDisplay() {
         //glut_task_ = std::async(std::launch::async, glutMainLoop);
     }
 
     void display()
     {
-        std::cout << "Something happen..\n";
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_TEXTURE_2D);
 
@@ -101,6 +120,18 @@ namespace {
     }
 }
 
+std::vector<uint8_t> read_file(fs::path path) {
+    auto f = std::ifstream{ path, std::ios::binary };
+    if (!f) {
+        std::cerr << "Cannot open file=" << path;
+        return {};
+    }
+
+    auto start = std::istreambuf_iterator<char>{ f };
+    auto end = decltype(start){};
+    return { start , end };
+
+}
 
 int main(int argc, char** argv)
 {
@@ -108,16 +139,9 @@ int main(int argc, char** argv)
 
     auto filename = "big_bunny_thumbnail_vlc.png";
     auto path = fs::path{ argv[0] }.parent_path() / filename;
-    auto f = std::ifstream{ path, std::ios::binary };
-    if (!f) {
-        std::cerr << "Cannot open file=" << path;
-        return -1;
-    }
+    auto encoded_picture = read_file(path);
 
-    auto start = std::istreambuf_iterator<char>{ f };
-    auto end = decltype(start){};
-    auto encoded_picture = std::vector<uint8_t>{ start , end };
-    p->Open(encoded_picture);
+    p->Open(encoded_picture, Format::kPng{});
     p->EnableDisplay();
     glutMainLoop();
     return 0;
