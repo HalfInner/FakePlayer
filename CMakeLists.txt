@@ -26,11 +26,12 @@ set (SOURCES
   src/main.cc
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${TPP_FREE_GLUT}/include )
 target_link_directories(${PROJECT_NAME} PUBLIC ${TPP_FREE_GLUT}/lib)
-target_link_libraries(${PROJECT_NAME} PUBLIC freeglut_staticd)
+target_link_libraries(${PROJECT_NAME} PUBLIC freeglut_staticd 3pp_libs)
+target_sources(${PROJECT_NAME} PUBLIC ${SOURCES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
 

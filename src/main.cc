@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "lodepng/lodepng.h"
+#include "picojpeg/helper.h"
 #include <iostream>
 #include <format>
 #include <functional>
@@ -79,9 +80,19 @@ public:
             img_.raw_data.data());
     }
 
-    template<>
-    void Open<>(const std::vector<uint8_t>& data, Format::kMjpeg) {
+    template <>
+    void Open<>(const std::vector<uint8_t>& data, Format::kMjpeg) {}
 
+    template <>
+    void Open<>(const std::vector<uint8_t>& data, Format::kJpeg) {
+        auto img = decodejpg(data);
+
+        glGenTextures(1, &img_.texture_id);
+        glBindTexture(GL_TEXTURE_2D, img_.texture_id);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_.width, img_.height, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, img_.raw_data.data());
     }
 
     void EnableDisplay() {
