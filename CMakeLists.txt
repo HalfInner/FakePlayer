@@ -19,11 +19,11 @@ ExternalProject_Add(freeglut
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${TPP_FREE_GLUT} -DFREEGLUT_BUILD_STATIC_LIBS=ON
 )
 
-include_directories(3pp/lodepng)
+add_subdirectory(3pp)
+include_directories(3pp)
 
 set (SOURCES
   src/main.cc
-  3pp/lodepng/lodepng.cc
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
