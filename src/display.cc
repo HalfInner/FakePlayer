@@ -1,7 +1,8 @@
 #include "display.hh"
-#include "GL/freeglut_std.h"
 
 #include <thread>
+
+#include "GL/freeglut_std.h"
 
 DisplayOpenGL* DisplayOpenGL::g_self = nullptr;
 
@@ -29,15 +30,13 @@ void DisplayOpenGL::AddToQueue(const Frame& frame) {
 
 void DisplayOpenGL::Run() {
   is_running_ = true;
-  while(is_running_) {
+  while (is_running_) {
     draw();
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(0s);
   }
 }
-void DisplayOpenGL::Stop() {
-  is_running_ = false;
-}
+void DisplayOpenGL::Stop() { is_running_ = false; }
 
 void DisplayOpenGL::draw() {
   Frame f;

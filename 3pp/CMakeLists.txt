@@ -21,3 +21,15 @@ ExternalProject_Add(3pp_glfw
   INSTALL_DIR ${TPP_LIB_DIR}
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${TPP_LIB_DIR}
 )
+
+ExternalProject_Add(3pp_jpeg
+  GIT_REPOSITORY  https://github.com/libjpeg-turbo/libjpeg-turbo
+  GIT_PROGRESS  ON
+  GIT_TAG main
+  PREFIX  ${TPP_DIR}/jpeg
+  UPDATE_DISCONNECTED 1
+  INSTALL_DIR ${TPP_LIB_DIR}
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${TPP_LIB_DIR}
+)
+
+

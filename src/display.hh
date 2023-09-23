@@ -36,5 +36,5 @@ class DisplayOpenGL {
   std::deque<unsigned> display_texture_queue_{};
   std::deque<Frame> frames_{};
 
-  bool is_running_ {false};
+  bool is_running_{false};
 };

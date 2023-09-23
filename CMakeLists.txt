@@ -14,10 +14,10 @@ set (SOURCES
 add_executable(${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PRIVATE ${TPP_LIB_DIR}/include)
 target_link_directories(${PROJECT_NAME} PRIVATE ${TPP_LIB_DIR}/lib)
-target_link_libraries(${PROJECT_NAME} PRIVATE GL glfw3 glut rt dl pthread)
+target_link_libraries(${PROJECT_NAME} PRIVATE GL glfw3 glut rt dl turbojpeg pthread)
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
-add_dependencies(${PROJECT_NAME} 3pp_freeglut 3pp_glfw)
+add_dependencies(${PROJECT_NAME} 3pp_freeglut 3pp_glfw 3pp_jpeg)
 
 # # Copy the FreeGLUT DLLs to the executable's directory
 # add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
